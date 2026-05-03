@@ -1,0 +1,23 @@
+{
+  "name": "creepercloud",
+  "version": "1.0.0",
+  "description": "Community-powered free Minecraft servers",
+  "main": "broker.js",
+  "bin": {
+    "creepercloud-host": "./volunteer.js"
+  },
+  "scripts": {
+    "broker": "node broker.js",
+    "host": "node volunteer.js",
+    "start": "node broker.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0",
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["minecraft", "server", "community", "volunteer", "gaming"],
+  "license": "MIT"
+}
