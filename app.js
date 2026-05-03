@@ -14,9 +14,6 @@ function animateCounter(el, target, duration = 1500) {
   requestAnimationFrame(step);
 }
 window.addEventListener('load', () => {
-  animateCounter(document.getElementById('stat-hosts'), targets.hosts);
-  animateCounter(document.getElementById('stat-servers'), targets.servers);
-  animateCounter(document.getElementById('stat-players'), targets.players);
   animateTerminal();
 });
 
@@ -52,37 +49,97 @@ function switchTab(tab) {
   document.getElementById('steps-' + tab).classList.remove('hidden');
 }
 
-// ── Request server (simulated — replace with real broker call) ──
-const mockHosts = [
-  { name: 'CoolDude42', region: 'US-Central' },
-  { name: 'Steve_IRL', region: 'US-East' },
-  { name: 'Anonymous Volunteer', region: 'EU-West' },
-  { name: 'Notch_fan99', region: 'US-West' },
-];
-const mockPorts = [25565, 25566, 25567, 25568];
+// ── Broker URL ──
+const BROKER_WS = 'wss://ezhost-production.up.railway.app';
+const BROKER_HTTP = 'https://ezhost-production.up.railway.app';
 
+// ── Fetch live stats from broker ──
+async function fetchLiveStats() {
+  try {
+    const res = await fetch(`${BROKER_HTTP}/api/stats`);
+    const data = await res.json();
+    document.getElementById('stat-hosts').textContent = data.activeHosts ?? 0;
+    document.getElementById('stat-servers').textContent = data.runningSessions ?? 0;
+    document.getElementById('stat-players').textContent = data.totalPlayers ?? 0;
+  } catch {
+    // Broker unreachable — leave animated defaults
+  }
+}
+window.addEventListener('load', () => {
+  fetchLiveStats();
+  setInterval(fetchLiveStats, 15000); // refresh every 15s
+});
+
+// ── Request server — real broker WebSocket ──
 function requestServer() {
   const btn = document.querySelector('.btn-primary.wide');
   btn.textContent = '⏳ Finding a host...';
   btn.disabled = true;
 
-  // Simulate broker matchmaking delay
-  setTimeout(() => {
-    const host = mockHosts[Math.floor(Math.random() * mockHosts.length)];
-    const port = mockPorts[Math.floor(Math.random() * mockPorts.length)];
-    const ip = `mc.creepercloud.io:${port}`;
+  let ws;
+  try {
+    ws = new WebSocket(BROKER_WS);
+  } catch {
+    btn.textContent = '✗ Could not connect to broker';
+    btn.disabled = false;
+    return;
+  }
 
-    document.getElementById('result-ip').textContent = ip;
-    document.getElementById('result-host').textContent = host.name;
-    document.getElementById('result-region').textContent = host.region;
+  const timeout = setTimeout(() => {
+    btn.textContent = '✗ Timed out — no hosts available';
+    btn.disabled = false;
+    ws.close();
+  }, 20000);
 
-    document.querySelector('.server-form').classList.add('hidden');
-    document.getElementById('server-result').classList.remove('hidden');
+  ws.onopen = () => {
+    ws.send(JSON.stringify({
+      type: 'request_server',
+      version: document.getElementById('mc-version').value,
+      maxPlayers: parseInt(document.getElementById('max-players').value),
+      gameMode: document.querySelector('input[name="mode"]:checked').value,
+    }));
+  };
 
-    // Update live stats
-    targets.servers++;
-    document.getElementById('stat-servers').textContent = targets.servers;
-  }, 2200);
+  ws.onmessage = (event) => {
+    let msg;
+    try { msg = JSON.parse(event.data); } catch { return; }
+
+    if (msg.type === 'queued') {
+      btn.textContent = '⚡ Host found! Starting server...';
+    }
+
+    if (msg.type === 'server_ready') {
+      clearTimeout(timeout);
+      document.getElementById('result-ip').textContent = msg.ip;
+      document.getElementById('result-host').textContent = 'Volunteer Host';
+      document.getElementById('result-region').textContent = 'Community';
+      document.querySelector('.server-form').classList.add('hidden');
+      document.getElementById('server-result').classList.remove('hidden');
+      fetchLiveStats();
+      ws.close();
+    }
+
+    if (msg.type === 'error') {
+      clearTimeout(timeout);
+      btn.textContent = '✗ ' + msg.message;
+      btn.disabled = false;
+      ws.close();
+    }
+  };
+
+  ws.onerror = () => {
+    clearTimeout(timeout);
+    btn.textContent = '✗ Could not reach broker';
+    btn.disabled = false;
+  };
+
+  ws.onclose = (e) => {
+    if (e.code !== 1000) {
+      clearTimeout(timeout);
+      btn.textContent = '✗ Connection lost — try again';
+      btn.disabled = false;
+    }
+  };
 }
 
 // ── Copy helpers ──
