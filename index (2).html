@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CreeperCloud — Free Minecraft Servers, Community Powered</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <span class="logo-icon">⛏</span>
+      <span class="logo-text">CreeperCloud</span>
+      <span class="badge">BETA</span>
+    </div>
+    <div class="nav-links">
+      <a href="https://discord.gg" target="_blank">Discord</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="https://github.com" target="_blank" class="btn-outline">GitHub</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-content">
+      <div class="pill">OPEN SOURCE + COMMUNITY POWERED</div>
+      <h1 class="hero-title">
+        Free Minecraft Servers<br/>
+        <span class="accent">No Downloads Required</span>
+      </h1>
+      <p class="hero-sub">
+        Volunteers donate their idle PC power. You get a real Minecraft server in seconds —
+        no setup, no cost, no GPU required on your end.
+      </p>
+      <div class="hero-btns">
+        <a href="#get-server" class="btn-primary">▶ Get a Free Server</a>
+        <a href="#volunteer" class="btn-ghost">Become a Host →</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num" id="stat-hosts">0</span><span class="stat-label">Active Hosts</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-num" id="stat-servers">0</span><span class="stat-label">Servers Running</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-num" id="stat-players">0</span><span class="stat-label">Players Online</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="terminal-title">creepercloud-host.js</span>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+          <div class="line"><span class="prompt">$</span> node volunteer.js</div>
+          <div class="line out" id="tl1"></div>
+          <div class="line out" id="tl2"></div>
+          <div class="line out" id="tl3"></div>
+          <div class="line out accent-line" id="tl4"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how-it-works">
+    <div class="section-label">HOW IT WORKS</div>
+    <h2 class="section-title">Simple for Players.<br/>Simple for Hosts.</h2>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('player')">🎮 I Want a Server</button>
+      <button class="tab" onclick="switchTab('host')">💻 I Want to Host</button>
+    </div>
+
+    <div class="steps" id="steps-player">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-arrow">→</div>
+        <h3>Request</h3>
+        <p>Click "Get a Free Server." No account needed. We match you to an available volunteer host.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-arrow">→</div>
+        <h3>Connect</h3>
+        <p>Get your server IP instantly. Open Minecraft, add the server — done. Java & Bedrock supported.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Play</h3>
+        <p>Your server runs on a real PC donated by the community. Invite friends. Build. Survive.</p>
+      </div>
+    </div>
+
+    <div class="steps hidden" id="steps-host">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-arrow">→</div>
+        <h3>Install</h3>
+        <p>Install Node.js and run <code>npx creepercloud-host</code> — or clone the repo and run <code>node volunteer.js</code>.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-arrow">→</div>
+        <h3>Connect</h3>
+        <p>Your PC registers with the CreeperCloud broker. Set your limits: max players, RAM, hours available.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Host</h3>
+        <p>When a player requests a server, CreeperCloud spins up a Minecraft instance on your machine automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GET SERVER -->
+  <section class="section dark-section" id="get-server">
+    <div class="section-label">FOR PLAYERS</div>
+    <h2 class="section-title">Get Your Server</h2>
+    <div class="server-card">
+      <div class="server-form">
+        <div class="form-row">
+          <label>Server Name</label>
+          <input type="text" id="server-name" placeholder="My Epic World" maxlength="32"/>
+        </div>
+        <div class="form-row">
+          <label>Minecraft Version</label>
+          <select id="mc-version">
+            <option>1.21.4 (Latest)</option>
+            <option>1.20.4</option>
+            <option>1.19.4</option>
+            <option>1.18.2</option>
+            <option>Paper 1.21.4</option>
+            <option>Fabric 1.21.4</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Max Players</label>
+          <div class="slider-row">
+            <input type="range" id="max-players" min="1" max="20" value="5" oninput="document.getElementById('player-count').textContent=this.value"/>
+            <span id="player-count">5</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Game Mode</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="mode" value="survival" checked/> Survival</label>
+            <label class="radio-label"><input type="radio" name="mode" value="creative"/> Creative</label>
+            <label class="radio-label"><input type="radio" name="mode" value="adventure"/> Adventure</label>
+          </div>
+        </div>
+        <button class="btn-primary wide" onclick="requestServer()">⛏ Find Me a Host</button>
+      </div>
+      <div class="server-result hidden" id="server-result">
+        <div class="result-icon">✅</div>
+        <h3>Server Ready!</h3>
+        <div class="ip-box">
+          <span id="result-ip">mc.creepercloud.io:25565</span>
+          <button onclick="copyIP()">Copy</button>
+        </div>
+        <p class="result-note">Add this to Minecraft → Multiplayer → Add Server.<br/>Server will stay alive while players are connected.</p>
+        <div class="result-meta">
+          <span>🌍 Host: <strong id="result-host">Anonymous Volunteer</strong></span>
+          <span>📍 Region: <strong id="result-region">US-Central</strong></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOLUNTEER -->
+  <section class="section" id="volunteer">
+    <div class="section-label">FOR VOLUNTEERS</div>
+    <h2 class="section-title">Donate Your Idle PC<br/><span class="accent">Power the Community</span></h2>
+    <p class="section-sub">When you're not using your PC, let it host Minecraft servers for people who need them. You control everything — RAM limits, player caps, hours, and you can stop anytime.</p>
+
+    <div class="install-box">
+      <div class="install-method">
+        <div class="install-label">QUICK START (npx)</div>
+        <div class="code-block">
+          <code>npx creepercloud-host</code>
+          <button class="copy-btn" onclick="copyCode('npx creepercloud-host')">Copy</button>
+        </div>
+      </div>
+      <div class="install-method">
+        <div class="install-label">FROM GITHUB</div>
+        <div class="code-block">
+          <code>git clone https://github.com/youruser/creepercloud<br/>cd creepercloud<br/>node volunteer.js</code>
+          <button class="copy-btn" onclick="copyCode('git clone https://github.com/youruser/creepercloud\ncd creepercloud\nnode volunteer.js')">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="perks">
+      <div class="perk">
+        <div class="perk-icon">🛡️</div>
+        <h4>You're in Control</h4>
+        <p>Set RAM limits, max players, and available hours. Stop hosting anytime with Ctrl+C.</p>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">🔒</div>
+        <h4>Isolated Servers</h4>
+        <p>Each Minecraft server runs in its own process. Players can't access your files or network.</p>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">🌐</div>
+        <h4>Auto Port Forwarding</h4>
+        <p>Uses secure tunneling — no router config needed. Just run the script.</p>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">💚</div>
+        <h4>Open Source</h4>
+        <p>Every line of code is public. Audit exactly what runs on your machine.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">⛏ CreeperCloud</div>
+    <p>Open source. Community powered. Free forever.</p>
+    <div class="footer-links">
+      <a href="https://github.com" target="_blank">GitHub</a>
+      <a href="#">Discord</a>
+      <a href="#">Docs</a>
+      <a href="#">Privacy</a>
+    </div>
+    <p class="footer-fine">Not affiliated with Mojang or Microsoft.</p>
+  </footer>
+
+  <div class="toast hidden" id="toast">Copied!</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
